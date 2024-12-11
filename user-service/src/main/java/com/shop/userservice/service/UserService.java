@@ -4,20 +4,24 @@ import com.shop.userservice.dto.UserDto;
 import com.shop.userservice.entity.User;
 import com.shop.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
     public UserDto.UserResponse signUp(UserDto.SignUpRequest request) {
+        log.debug("회원가입 처리 시작: {}", request);
         if (userRepository.existsByEmail(request.getEmail())) {
+            log.warn("이미 존재하는 이메일: {}", request.getEmail());
             throw new RuntimeException("Email already exists");
         }
-
+        log.info("새로운 사용자 생성 중...");
         User user = User.builder()
                 .email(request.getEmail())
                 .password(request.getPassword())
